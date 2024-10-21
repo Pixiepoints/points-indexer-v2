@@ -4,6 +4,7 @@ using AElf;
 using GraphQL;
 using PixiePointsApp.Entities;
 using PixiePointsApp.GraphQL.Dto;
+using Points.Contracts.Point;
 using Volo.Abp.ObjectMapping;
 
 namespace PixiePointsApp.GraphQL;
@@ -66,6 +67,19 @@ public partial class Query
         if (!string.IsNullOrEmpty(input.DappName))
         {
             queryable = queryable.Where(i => i.DappId == input.DappName);
+        }
+
+        if (!input.AddressList.IsNullOrEmpty())
+        {
+            queryable = queryable.Where(
+                input.AddressList.Select(address =>
+                        (Expression<Func<AddressPointsSumBySymbolIndex, bool>>)(o => o.Address.Contains(address)))
+                    .Aggregate((prev, next) => prev.Or(next)));
+        }
+
+        if (input.Role == null)
+        {
+            queryable = queryable.Where(i => i.Role == IncomeSourceType.User);
         }
 
         var totalCount = queryable.Count();
@@ -201,7 +215,7 @@ public partial class Query
         }
 
         var queryable = await repository.GetQueryableAsync();
-        
+
         queryable = queryable.Where(
             input.ReferrerList.Select(referrer =>
                     (Expression<Func<UserReferralRecordIndex, bool>>)(u => u.Referrer.Contains(referrer)))
