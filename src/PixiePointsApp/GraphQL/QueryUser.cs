@@ -39,6 +39,11 @@ public partial class Query
 
         if (input.CreateTimeGtEq != null)
             queryable = queryable.Where(i => i.CreateTime >= input.CreateTimeGtEq);
+        
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<OperatorUserIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
 
         var totalCount = queryable.Count();
         if (totalCount == 0)

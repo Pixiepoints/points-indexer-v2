@@ -77,10 +77,21 @@ public partial class Query
                     .Aggregate((prev, next) => prev.Or(next)));
         }
 
+        var domains = new List<string>(DomainInfoConstants.InternalDomains);
+        if (input.HiddenMainDomain == null)
+        {
+            domains.Remove(DomainInfoConstants.MainDomain);
+        }
+
         if (input.Role == null)
         {
             queryable = queryable.Where(i => i.Role == IncomeSourceType.User);
         }
+
+        queryable = queryable.Where(
+            domains.Select(domain =>
+                    (Expression<Func<AddressPointsSumBySymbolIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
 
         var totalCount = queryable.Count();
         if (totalCount == 0)
@@ -123,6 +134,11 @@ public partial class Query
         {
             queryable = queryable.Where(i => i.Role == input.Role);
         }
+        
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<AddressPointsSumByActionIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
 
         var totalCount = queryable.Count();
         if (totalCount == 0)
@@ -145,6 +161,7 @@ public partial class Query
         [FromServices] IObjectMapper objectMapper, GetPointsRecordByNameDto input)
     {
         var queryable = await repository.GetQueryableAsync();
+        
         if (!input.DappId.IsNullOrWhiteSpace())
         {
             queryable = queryable.Where(i => i.DappId == input.DappId);
@@ -159,7 +176,12 @@ public partial class Query
         {
             queryable = queryable.Where(i => i.PointsName == input.PointsName);
         }
-
+        
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<AddressPointsSumByActionIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
+        
         var totalCount = queryable.Count();
         if (totalCount == 0)
         {
@@ -183,8 +205,14 @@ public partial class Query
         GetAddressPointsLogDto input)
     {
         var queryable = await repository.GetQueryableAsync();
-        var recordList = queryable.Where(i => i.Role == input.Role && i.Address == input.Address).ToList();
+        
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<AddressPointsLogIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
 
+        var recordList = queryable.Where(i => i.Role == input.Role && i.Address == input.Address).ToList();
+        
         if (recordList.Count == 0)
         {
             return new AddressPointsLogDtoList
@@ -220,7 +248,12 @@ public partial class Query
             input.ReferrerList.Select(referrer =>
                     (Expression<Func<UserReferralRecordIndex, bool>>)(u => u.Referrer.Contains(referrer)))
                 .Aggregate((prev, next) => prev.Or(next)));
-
+        
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<UserReferralRecordIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
+        
         var totalCount = queryable.Count();
         if (totalCount == 0)
         {
@@ -260,6 +293,11 @@ public partial class Query
                     (Expression<Func<UserReferralCountIndex, bool>>)(u => u.Referrer.Contains(referrer)))
                 .Aggregate((prev, next) => prev.Or(next)));
 
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<UserReferralCountIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
+        
         var totalCount = queryable.Count();
         if (totalCount == 0)
         {
@@ -301,6 +339,11 @@ public partial class Query
                     (Expression<Func<OperatorDomainIndex, bool>>)(u => u.InviterAddress.Contains(address)))
                 .Aggregate((prev, next) => prev.Or(next)));
 
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<OperatorDomainIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
+        
         var totalCount = queryable.Count();
         if (totalCount == 0)
         {

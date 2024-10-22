@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AeFinder.Sdk;
 using GraphQL;
 using PixiePointsApp.Entities;
@@ -23,6 +24,11 @@ public partial class Query
 
         queryable = queryable.Where(i => i.DappId == input.DappId && i.Role == IncomeSourceType.Kol);
 
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<AddressPointsSumBySymbolIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
+        
         var totalCount = queryable.Count();
         if (totalCount == 0)
         {
@@ -54,6 +60,11 @@ public partial class Query
         queryable = input.Type == OperatorRole.All
             ? queryable.Where(i => i.Role == IncomeSourceType.Kol || i.Role == IncomeSourceType.Inviter)
             : queryable.Where(i => (int)i.Role == (int)input.Type);
+        
+        queryable = queryable.Where(
+            DomainInfoConstants.InternalDomains.Select(domain =>
+                    (Expression<Func<AddressPointsSumBySymbolIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                .Aggregate((prev, next) => prev.Or(next)));
 
         var totalCount = queryable.Count();
         if (totalCount == 0)

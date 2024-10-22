@@ -82,11 +82,8 @@ public class PointsLogEventProcessor : PixiePointsProcessorBase<PointsChanged>
             {
                 pointsIndex = ObjectMapper.Map<PointsChangedDetail, AddressPointsSumBySymbolIndex>(pointsDetail);
                 ObjectMapper.Map(context, pointsIndex);
-                var needUpdated = UpdatePoint(pointsDetail, pointsIndex, out var newIndex);
-                if (!needUpdated)
-                {
-                    continue;
-                }
+                
+                UpdatePoint(pointsDetail, pointsIndex, out var newIndex);
 
                 newIndex.Id = pointsSymbolIndexId;
                 newIndex.CreateTime = context.Block.BlockTime;
