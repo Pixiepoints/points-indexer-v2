@@ -1,4 +1,5 @@
 using System.Numerics;
+using AeFinder.Sdk.Logging;
 using AeFinder.Sdk.Processor;
 using AElf;
 using PixiePointsApp.Entities;
@@ -18,14 +19,19 @@ public class PointsLogEventProcessor : PixiePointsProcessorBase<PointsChanged>
             var balanceValue = pointsDetail.BalanceValue?.Value ?? pointsDetail.Balance.ToString();
             var increaseValue = pointsDetail.IncreaseValue?.Value ?? pointsDetail.IncreaseAmount.ToString();
 
-            if (increaseValue.IsNullOrWhiteSpace() || increaseValue == "0") continue;
-
             var rawLogIndexId = IdGenerateHelper.GetId(context.Transaction.TransactionId, pointsDetail.DappId.ToHex(),
                 pointsDetail.PointsReceiver.ToBase58(), pointsDetail.IncomeSourceType, pointsDetail.ActionName,
                 pointsDetail.PointsName, balanceValue, increaseValue);
             var pointsLogIndexId = HashHelper.ComputeFrom(rawLogIndexId).ToHex();
 
-            var pointsLogIndex = ObjectMapper.Map<PointsChangedDetail, AddressPointsLogIndex>(pointsDetail);
+            var pointsLogIndex = await GetEntityAsync<AddressPointsLogIndex>(pointsLogIndexId);
+            if (pointsLogIndex != null)
+            {
+                Logger.LogInformation("Duplicated event index: {index}", pointsLogIndex);
+                continue;
+            }
+
+            pointsLogIndex = ObjectMapper.Map<PointsChangedDetail, AddressPointsLogIndex>(pointsDetail);
             pointsLogIndex.Amount = pointsDetail.IncreaseValue?.Value ?? pointsDetail.IncreaseAmount.ToString();
             pointsLogIndex.Id = pointsLogIndexId;
             pointsLogIndex.CreateTime = context.Block.BlockTime;
@@ -82,7 +88,7 @@ public class PointsLogEventProcessor : PixiePointsProcessorBase<PointsChanged>
             {
                 pointsIndex = ObjectMapper.Map<PointsChangedDetail, AddressPointsSumBySymbolIndex>(pointsDetail);
                 ObjectMapper.Map(context, pointsIndex);
-                
+
                 UpdatePoint(pointsDetail, pointsIndex, out var newIndex);
 
                 newIndex.Id = pointsSymbolIndexId;
