@@ -85,6 +85,54 @@ public partial class Query
         };
     }
 
+    [Name("getAllPointsList")]
+    public static async Task<PointsSumBySymbolDtoList> GetAllPointsList(
+        [FromServices] IReadOnlyRepository<AddressPointsSumBySymbolIndex> repository,
+        [FromServices] IObjectMapper objectMapper, GetAllPointsListDto input)
+    {
+        var queryable = await repository.GetQueryableAsync();
+
+        if (!string.IsNullOrEmpty(input.DappName))
+        {
+            queryable = queryable.Where(i => i.DappId == input.DappName);
+        }
+
+        if (input.Role == null)
+        {
+            queryable = queryable.Where(i => i.Role == IncomeSourceType.User);
+        }
+
+        var totalCount = queryable.Count();
+        if (totalCount == 0)
+            return new PointsSumBySymbolDtoList
+            {
+                Data = []
+            };
+
+        if (string.IsNullOrEmpty(input.LastId) || input.LastBlockHeight > 0)
+        {
+        }
+
+        var recordList = string.IsNullOrEmpty(input.LastId) || input.LastBlockHeight == 0
+            ? queryable
+                .OrderBy(o => o.Metadata.Block.BlockHeight)
+                .ThenBy(o => o.Id)
+                .Take(input.MaxResultCount)
+                .ToList()
+            : queryable
+                .OrderBy(o => o.Metadata.Block.BlockHeight)
+                .ThenBy(o => o.Id)
+                .After([input.LastBlockHeight, input.LastId])
+                .Take(input.MaxResultCount)
+                .ToList();
+        
+        return new PointsSumBySymbolDtoList
+        {
+            Data = objectMapper.Map<List<AddressPointsSumBySymbolIndex>, List<PointsSumBySymbolDto>>(recordList),
+            TotalRecordCount = totalCount
+        };
+    }
+
     private static IEnumerable<AddressPointsSumBySymbolIndex> SortByPropertyName(
         IEnumerable<AddressPointsSumBySymbolIndex> list, SortingKeywordType sortingKeywordType, string sortType)
     {

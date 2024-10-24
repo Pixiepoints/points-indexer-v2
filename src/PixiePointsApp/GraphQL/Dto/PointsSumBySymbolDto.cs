@@ -23,6 +23,7 @@ public class PointsSumBySymbolDto
     public string TwelveSymbolAmount { get; set; } 
     public DateTime CreateTime { get; set; }
     public DateTime UpdateTime { get; set; }
+    public long BlockHeight { get; set; }
 }
 
 public class PointsSumBySymbolDtoList

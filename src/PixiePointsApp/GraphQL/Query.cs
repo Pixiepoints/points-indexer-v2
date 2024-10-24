@@ -100,7 +100,7 @@ public partial class Query
                 Data = []
             };
 
-        var recordList = queryable.OrderBy(o => o.UpdateTime).Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+        var recordList = queryable.OrderBy(o => o.CreateTime).Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
 
         return new PointsSumBySymbolDtoList
         {
