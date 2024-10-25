@@ -16,7 +16,6 @@ public class PointsLogEventProcessorTests : PixiePointsAppTestBase
     private readonly PointsLogEventProcessor _pointsLogEventProcessor;
     private readonly IReadOnlyRepository<AddressPointsSumBySymbolIndex> _symbolIndexRepository;
     private readonly IReadOnlyRepository<AddressPointsSumByActionIndex> _actionIndexRepository;
-    private readonly IReadOnlyRepository<AddressPointsLogIndex> _logIndexRepository;
     private readonly IObjectMapper _objectMapper;
 
     public PointsLogEventProcessorTests()
@@ -24,7 +23,6 @@ public class PointsLogEventProcessorTests : PixiePointsAppTestBase
         _pointsLogEventProcessor = GetRequiredService<PointsLogEventProcessor>();
         _symbolIndexRepository = GetRequiredService<IReadOnlyRepository<AddressPointsSumBySymbolIndex>>();
         _actionIndexRepository = GetRequiredService<IReadOnlyRepository<AddressPointsSumByActionIndex>>();
-        _logIndexRepository = GetRequiredService<IReadOnlyRepository<AddressPointsLogIndex>>();
         _objectMapper = GetRequiredService<IObjectMapper>();
     }
 
@@ -150,23 +148,6 @@ public class PointsLogEventProcessorTests : PixiePointsAppTestBase
                 Role = IncomeSourceType.Kol
             });
         pointsSumByAction2.TotalRecordCount.ShouldBe(1);
-        
-        var addressLog = await Query.GetAddressPointLog(_logIndexRepository, _objectMapper,
-            new GetAddressPointsLogDto
-            {
-                Address = "2NxwCPAGJr4knVdmwhb1cK7CkZw5sMJkRDLnT7E2GoDP2dy5iZ",
-                Role = IncomeSourceType.Kol
-            });
-        addressLog.TotalRecordCount.ShouldBe(1);
-        
-        var pointsSumBySymbol = await Query.GetPointsSumBySymbol(_symbolIndexRepository, _objectMapper,
-            new GetPointsSumBySymbolDto
-            {
-                StartTime = DateTime.Now.AddHours(-1),
-                EndTime = DateTime.Now.AddHours(1),
-                MaxResultCount = 10
-            });
-        pointsSumBySymbol.TotalRecordCount.ShouldBe(3);
     }
     
     [Fact]

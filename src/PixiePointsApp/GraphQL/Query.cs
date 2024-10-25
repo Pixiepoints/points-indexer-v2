@@ -76,7 +76,7 @@ public partial class Query
                         (Expression<Func<AddressPointsSumBySymbolIndex, bool>>)(o => o.Address == address))
                     .Aggregate((prev, next) => prev.Or(next)));
         }
-
+        
         var domains = new List<string>(DomainInfoConstants.InternalDomains);
         if (input.HiddenMainDomain == null)
         {
@@ -198,37 +198,7 @@ public partial class Query
             TotalRecordCount = totalCount
         };
     }
-
-    [Name("getAddressPointLog")]
-    public static async Task<AddressPointsLogDtoList> GetAddressPointLog(
-        [FromServices] IReadOnlyRepository<AddressPointsLogIndex> repository, [FromServices] IObjectMapper objectMapper,
-        GetAddressPointsLogDto input)
-    {
-        var queryable = await repository.GetQueryableAsync();
-        
-        queryable = queryable.Where(
-            DomainInfoConstants.InternalDomains.Select(domain =>
-                    (Expression<Func<AddressPointsLogIndex, bool>>)(o => o.Domain != domain))
-                .Aggregate((prev, next) => prev.Or(next)));
-
-        var recordList = queryable.Where(i => i.Role == input.Role && i.Address == input.Address).ToList();
-        
-        if (recordList.Count == 0)
-        {
-            return new AddressPointsLogDtoList
-            {
-                Data = []
-            };
-        }
-
-        return new AddressPointsLogDtoList
-        {
-            Data = objectMapper.Map<List<AddressPointsLogIndex>, List<AddressPointsLogDto>>(recordList),
-            TotalRecordCount = recordList.Count
-        };
-    }
-
-
+    
     [Name("getUserReferralRecords")]
     public static async Task<UserReferralRecordDtoList> GetUserReferralRecords(
         [FromServices] IReadOnlyRepository<UserReferralRecordIndex> repository,

@@ -1,5 +1,4 @@
 using System.Numerics;
-using AeFinder.Sdk.Logging;
 using AeFinder.Sdk.Processor;
 using AElf;
 using PixiePointsApp.Entities;
@@ -19,24 +18,7 @@ public class PointsLogEventProcessor : PixiePointsProcessorBase<PointsChanged>
             var balanceValue = pointsDetail.BalanceValue?.Value ?? pointsDetail.Balance.ToString();
             var increaseValue = pointsDetail.IncreaseValue?.Value ?? pointsDetail.IncreaseAmount.ToString();
 
-            var rawLogIndexId = IdGenerateHelper.GetId(context.Transaction.TransactionId, pointsDetail.DappId.ToHex(),
-                pointsDetail.PointsReceiver.ToBase58(), pointsDetail.IncomeSourceType, pointsDetail.ActionName,
-                pointsDetail.PointsName, balanceValue, increaseValue);
-            var pointsLogIndexId = HashHelper.ComputeFrom(rawLogIndexId).ToHex();
-
-            var pointsLogIndex = await GetEntityAsync<AddressPointsLogIndex>(pointsLogIndexId);
-            if (pointsLogIndex != null)
-            {
-                Logger.LogInformation("Duplicated event index: {index}", pointsLogIndex);
-                continue;
-            }
-
-            pointsLogIndex = ObjectMapper.Map<PointsChangedDetail, AddressPointsLogIndex>(pointsDetail);
-            pointsLogIndex.Amount = pointsDetail.IncreaseValue?.Value ?? pointsDetail.IncreaseAmount.ToString();
-            pointsLogIndex.Id = pointsLogIndexId;
-            pointsLogIndex.CreateTime = context.Block.BlockTime;
-
-            await SaveEntityAsync(pointsLogIndex, context);
+            if (IsBigIntValueEmpty(increaseValue) && !IsBigIntValueEmpty(balanceValue)) continue;
 
             var rawActionIndexId = IdGenerateHelper.GetId(pointsDetail.DappId.ToHex(),
                 pointsDetail.PointsReceiver.ToBase58(), pointsDetail.Domain, pointsDetail.ActionName,
@@ -164,5 +146,10 @@ public class PointsLogEventProcessor : PixiePointsProcessorBase<PointsChanged>
     private static BigInteger ParseBigInteger(string input)
     {
         return BigInteger.TryParse(input, out var result) ? result : 0;
+    }
+
+    private bool IsBigIntValueEmpty(string value)
+    {
+        return value.IsNullOrWhiteSpace() || value == "0";
     }
 }
