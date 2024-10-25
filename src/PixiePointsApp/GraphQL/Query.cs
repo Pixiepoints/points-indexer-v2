@@ -138,7 +138,7 @@ public partial class Query
         queryable = queryable.Where(
             DomainInfoConstants.InternalDomains.Select(domain =>
                     (Expression<Func<AddressPointsSumByActionIndex, bool>>)(o => o.Domain != domain))
-                .Aggregate((prev, next) => prev.Or(next)));
+                .Aggregate((prev, next) => prev.And(next)));
 
         var totalCount = queryable.Count();
         if (totalCount == 0)
@@ -180,7 +180,7 @@ public partial class Query
         queryable = queryable.Where(
             DomainInfoConstants.InternalDomains.Select(domain =>
                     (Expression<Func<AddressPointsSumByActionIndex, bool>>)(o => o.Domain != domain))
-                .Aggregate((prev, next) => prev.Or(next)));
+                .Aggregate((prev, next) => prev.And(next)));
         
         var totalCount = queryable.Count();
         if (totalCount == 0)
@@ -222,7 +222,7 @@ public partial class Query
         queryable = queryable.Where(
             DomainInfoConstants.InternalDomains.Select(domain =>
                     (Expression<Func<UserReferralRecordIndex, bool>>)(o => o.Domain != domain))
-                .Aggregate((prev, next) => prev.Or(next)));
+                .Aggregate((prev, next) => prev.And(next)));
         
         var totalCount = queryable.Count();
         if (totalCount == 0)
@@ -266,7 +266,7 @@ public partial class Query
         queryable = queryable.Where(
             DomainInfoConstants.InternalDomains.Select(domain =>
                     (Expression<Func<UserReferralCountIndex, bool>>)(o => o.Domain != domain))
-                .Aggregate((prev, next) => prev.Or(next)));
+                .Aggregate((prev, next) => prev.And(next)));
         
         var totalCount = queryable.Count();
         if (totalCount == 0)
@@ -312,7 +312,7 @@ public partial class Query
         queryable = queryable.Where(
             DomainInfoConstants.InternalDomains.Select(domain =>
                     (Expression<Func<OperatorDomainIndex, bool>>)(o => o.Domain != domain))
-                .Aggregate((prev, next) => prev.Or(next)));
+                .Aggregate((prev, next) => prev.And(next)));
         
         var totalCount = queryable.Count();
         if (totalCount == 0)

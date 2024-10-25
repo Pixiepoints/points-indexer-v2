@@ -43,7 +43,7 @@ public partial class Query
         queryable = queryable.Where(
             DomainInfoConstants.InternalDomains.Select(domain =>
                     (Expression<Func<OperatorUserIndex, bool>>)(o => o.Domain != domain))
-                .Aggregate((prev, next) => prev.Or(next)));
+                .Aggregate((prev, next) => prev.And(next)));
 
         var totalCount = queryable.Count();
         if (totalCount == 0)
