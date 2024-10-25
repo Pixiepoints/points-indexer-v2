@@ -19,19 +19,19 @@ public partial class Query
         if (!input.DomainIn.IsNullOrEmpty())
             queryable = queryable.Where(
                 input.DomainIn.Select(domain =>
-                        (Expression<Func<OperatorUserIndex, bool>>)(o => o.Domain.Contains(domain)))
+                        (Expression<Func<OperatorUserIndex, bool>>)(o => o.Domain == domain))
                     .Aggregate((prev, next) => prev.Or(next)));
 
         if (!input.AddressIn.IsNullOrEmpty())
             queryable = queryable.Where(
                 input.AddressIn.Select(address =>
-                        (Expression<Func<OperatorUserIndex, bool>>)(o => o.Address.Contains(address)))
+                        (Expression<Func<OperatorUserIndex, bool>>)(o => o.Address == address))
                     .Aggregate((prev, next) => prev.Or(next)));
 
         if (!input.DappNameIn.IsNullOrEmpty())
             queryable = queryable.Where(
                 input.DappNameIn.Select(dappName =>
-                        (Expression<Func<OperatorUserIndex, bool>>)(o => o.DappName.Contains(dappName)))
+                        (Expression<Func<OperatorUserIndex, bool>>)(o => o.DappName == dappName))
                     .Aggregate((prev, next) => prev.Or(next)));
 
         if (input.CreateTimeLt != null)
@@ -42,7 +42,7 @@ public partial class Query
         
         queryable = queryable.Where(
             DomainInfoConstants.InternalDomains.Select(domain =>
-                    (Expression<Func<OperatorUserIndex, bool>>)(o => !o.Domain.Contains(domain)))
+                    (Expression<Func<OperatorUserIndex, bool>>)(o => o.Domain != domain))
                 .Aggregate((prev, next) => prev.Or(next)));
 
         var totalCount = queryable.Count();
