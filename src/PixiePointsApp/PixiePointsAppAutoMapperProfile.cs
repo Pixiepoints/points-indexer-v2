@@ -24,6 +24,7 @@ public class PixiePointsAppAutoMapperProfile : Profile
             .ForMember(t => t.TenSymbolAmount, m => m.MapFrom(f => f.TenSymbolAmount ?? "0"))
             .ForMember(t => t.ElevenSymbolAmount, m => m.MapFrom(f => f.ElevenSymbolAmount ?? "0"))
             .ForMember(t => t.TwelveSymbolAmount, m => m.MapFrom(f => f.TwelveSymbolAmount ?? "0"))
+            .ForPath(t => t.BlockHeight, m => m.MapFrom(f => f.Metadata.Block.BlockHeight))
             ;
         CreateMap<AddressPointsSumByActionIndex, PointsSumByActionDto>();
         CreateMap<AddressPointsLogIndex, AddressPointsLogDto>();
