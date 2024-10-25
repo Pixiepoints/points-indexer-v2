@@ -15,27 +15,28 @@ public static class ChainIdConstants
 
 public static class DomainInfoConstants
 {
-    public const string MainDomain = "hamster.beangotown.com";
+    public const string MainDomain = "hamster.beangotown.xyz";
 
     public static readonly List<string> InternalDomains =
     [
-        "cms.beangotown.com",
-        "cms-hamster.beangotown.com",
-        "dapp.beangotown.com",
-        "dapp-hamster.beangotown.com",
-        "soho-test2-api.beangotown.com",
-        "soho-test2.beangotown.com",
-        "soho-test2-dapp.beangotown.com",
-        "test.beangotown.com",
-        "test-cms.beangotown.com",
-        "test-cms-hamster.beangotown.com",
-        "test-hamster.beangotown.com",
-        "testv2.beangotown.com",
-        "tg.beangotown.com",
-        "tg-test.beangotown.com",
-        "v1.beangotown.com",
-        "www.beangotown.com",
-        "hamsterwoods.beangotown.com",
-        "hamster.beangotown.com"
+        "cms.beangotown.xyz",
+        "cms-hamster.beangotown.xyz",
+        "dapp.beangotown.xyz",
+        "dapp-hamster.beangotown.xyz",
+        "soho-test2-api.beangotown.xyz",
+        "soho-test2.beangotown.xyz",
+        "soho-test2-dapp.beangotown.xyz",
+        "test.beangotown.xyz",
+        "test-cms.beangotown.xyz",
+        "test-cms-hamster.beangotown.xyz",
+        "test-hamster.beangotown.xyz",
+        "testv2.beangotown.xyz",
+        "tg.beangotown.xyz",
+        "tg-test.beangotown.xyz",
+        "v1.beangotown.xyz",
+        "www.beangotown.xyz",
+        "hamsterwoods.beangotown.xyz",
+        "hamster.beangotown.xyz",
+        "sdkpixtest.beangotown.xyz"
     ];
 }
