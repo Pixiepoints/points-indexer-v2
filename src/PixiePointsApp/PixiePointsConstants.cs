@@ -36,6 +36,7 @@ public static class DomainInfoConstants
         "v1.beangotown.com",
         "www.beangotown.com",
         "hamsterwoods.beangotown.com",
-        "hamster.beangotown.com"
+        "hamster.beangotown.com",
+        "googleten.beangotown.com"
     ];
 }
